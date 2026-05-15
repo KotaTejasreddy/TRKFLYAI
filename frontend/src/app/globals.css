@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme tokens ───────────────────────────────────────────── */
+
+:root,
+:root.dark {
+  --bg-base:          #0a0a0f;
+  --bg-secondary:     #0d0d14;
+  --bg-card:          rgba(255, 255, 255, 0.04);
+  --bg-card-hover:    rgba(255, 255, 255, 0.07);
+  --border:           rgba(255, 255, 255, 0.08);
+  --border-hover:     rgba(99, 102, 241, 0.4);
+  --text:             #ffffff;
+  --text-secondary:   #9ca3af;
+  --text-muted:       #4b5563;
+  --navbar-bg:        rgba(2, 2, 6, 0.82);
+  --input-bg:         rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb:  #6366f1;
+  --grid-line:        rgba(99, 102, 241, 0.04);
+  --orb-a:            rgba(99,  102, 241, 0.10);
+  --orb-b:            rgba(139, 92,  246, 0.10);
+  --orb-c:            rgba(6,   182, 212, 0.04);
+}
+
+:root.light {
+  --bg-base:          #f2f1ff;
+  --bg-secondary:     #e8e6ff;
+  --bg-card:          rgba(255, 255, 255, 0.80);
+  --bg-card-hover:    rgba(255, 255, 255, 0.95);
+  --border:           rgba(99, 102, 241, 0.14);
+  --border-hover:     rgba(99, 102, 241, 0.45);
+  --text:             #0c0b1e;
+  --text-secondary:   #4b5069;
+  --text-muted:       #8b8faa;
+  --navbar-bg:        rgba(242, 241, 255, 0.88);
+  --input-bg:         rgba(255, 255, 255, 0.70);
+  --scrollbar-thumb:  #8b5cf6;
+  --grid-line:        rgba(99, 102, 241, 0.07);
+  --orb-a:            rgba(99,  102, 241, 0.08);
+  --orb-b:            rgba(139, 92,  246, 0.06);
+  --orb-c:            rgba(6,   182, 212, 0.04);
+}
+
+/* ── Base ───────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a78bfa; }
+
+/* ── Selection ──────────────────────────────────────────────── */
+::selection { background: rgba(99,102,241,0.3); color: white; }
+*:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
+
+/* ── Gradient text ──────────────────────────────────────────── */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400;
+}
+
+/* ── Theme-aware glass card ─────────────────────────────────── */
+.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  @apply backdrop-blur-xl rounded-2xl;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.glass:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+/* ── Glow utilities ─────────────────────────────────────────── */
+.glow        { box-shadow: 0 0 40px rgba(99,102,241,0.18); }
+.glow-strong { box-shadow: 0 0 60px rgba(99,102,241,0.35); }
+.glow-violet { box-shadow: 0 0 40px rgba(139,92,246,0.20); }
+.glow-cyan   { box-shadow: 0 0 40px rgba(6,182,212,0.15); }
+
+/* ── Grid background ────────────────────────────────────────── */
+.grid-pattern {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Gradient border ────────────────────────────────────────── */
+.gradient-border { position: relative; }
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Text secondary / muted helpers ─────────────────────────── */
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+
+/* ── Input theme ────────────────────────────────────────────── */
+.theme-input {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: border-color 0.2s, background 0.2s;
+}
+.theme-input:focus { border-color: rgba(99,102,241,0.5); outline: none; }
+.theme-input::placeholder { color: var(--text-muted); }
+
+/* ── Neon text shadows ───────────────────────────────────────── */
+.neon-indigo { text-shadow: 0 0 20px rgba(99,102,241,0.6); }
+.neon-violet { text-shadow: 0 0 20px rgba(139,92,246,0.6); }
+
+/* ──────────────────────────────────────────────────────────────
+   LIGHT-MODE GLOBAL OVERRIDES
+   Re-skin the most common dark-only Tailwind classes used in
+   pages so we don't have to rewrite every component.
+   ────────────────────────────────────────────────────────────── */
+:root.light input,
+:root.light select,
+:root.light textarea {
+  background: var(--input-bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+:root.light input::placeholder,
+:root.light textarea::placeholder { color: var(--text-muted); }
+:root.light select option {
+  background: #ffffff;
+  color: #0c0b1e;
+}
+
+/* Dark-mode <option> styling — browsers fall back to white otherwise */
+:root.dark select option,
+:root select option {
+  background: #0d0d14;
+  color: #ffffff;
+}
+:root.dark select option:checked,
+:root select option:checked {
+  background: #312e81;
+  color: #ffffff;
+}
+
+/* Native white-text overrides where it'd be invisible on light bg */
+:root.light .text-white   { color: var(--text) !important; }
+:root.light .text-gray-200 { color: var(--text) !important; }
+:root.light .text-gray-300 { color: #1f2937 !important; }
+:root.light .text-gray-400 { color: var(--text-secondary) !important; }
+:root.light .text-gray-500 { color: var(--text-muted) !important; }
+:root.light .text-gray-600 { color: var(--text-muted) !important; }
+
+/* Glass-card backgrounds used inline (bg-white/* with slash opacities) */
+:root.light .bg-white\/5,
+:root.light .bg-white\/\[0\.02\],
+:root.light .bg-white\/\[0\.04\],
+:root.light .bg-white\/\[0\.06\],
+:root.light .bg-white\/\[0\.07\] {
+  background-color: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(8px);
+}
+
+:root.light .border-white\/5,
+:root.light .border-white\/\[0\.05\],
+:root.light .border-white\/\[0\.06\],
+:root.light .border-white\/10,
+:root.light .border-white\/\[0\.10\],
+:root.light .border-white\/15,
+:root.light .border-white\/20 {
+  border-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Make hover states visible on light bg */
+:root.light .hover\:bg-white\/\[0\.07\]:hover,
+:root.light .hover\:bg-white\/\[0\.03\]:hover {
+  background-color: rgba(99, 102, 241, 0.06) !important;
+}
+:root.light .hover\:border-white\/20:hover {
+  border-color: rgba(99, 102, 241, 0.35) !important;
+}
+:root.light .hover\:text-white:hover { color: var(--text) !important; }
+
+/* Bottom-fade gradient inside HeroSection (dark-only) */
+:root.light .from-brand-dark { --tw-gradient-from: var(--bg-base) var(--tw-gradient-from-position) !important; }
+
+/* Radial vignette in Hero — use light-bg colour stop */
+:root.light section .absolute.bg-\[radial-gradient\(ellipse_80\%_60\%_at_50\%_50\%\,transparent_30\%\,\#020206_100\%\)\] {
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 30%, var(--bg-base) 100%) !important;
+}
