@@ -1,0 +1,33 @@
+# Render Blueprint — deploys the FastAPI backend.
+# How to use:
+#   1. Push your repo to GitHub.
+#   2. Go to https://dashboard.render.com → "New +" → "Blueprint".
+#   3. Connect the repo. Render reads this file and provisions the service.
+#   4. After creation, set the env vars marked `sync: false` in the dashboard.
+services:
+  - type: web
+    name: trkfly-api
+    runtime: python
+    region: oregon                  # change to your region if needed
+    plan: free                      # free tier — auto-sleeps after 15 min idle
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.4
+      - key: APP_ENV
+        value: production
+      - key: GEMINI_MODEL
+        value: gemini-flash-latest
+      - key: DB_NAME
+        value: trkotarun_ai
+      - key: MONGO_URI
+        sync: false                 # set in dashboard (Atlas connection string)
+      - key: GEMINI_API_KEY
+        sync: false                 # set in dashboard
+      - key: JWT_SECRET
+        generateValue: true         # Render auto-generates a strong secret
+      - key: CORS_ORIGINS
+        sync: false                 # e.g. ["https://yourdomain.com","https://www.yourdomain.com"]

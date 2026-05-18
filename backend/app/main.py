@@ -30,10 +30,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
+# CORS — driven by env var CORS_ORIGINS (comma-separated or JSON list).
+# In production, set CORS_ORIGINS to your Vercel + custom-domain URLs.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS or ["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
