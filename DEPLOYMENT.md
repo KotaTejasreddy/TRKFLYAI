@@ -4,11 +4,11 @@ Stack: **Next.js frontend** + **FastAPI backend** + **MongoDB Atlas**.
 Hosting plan: free across all services, **Namecheap = domain only**.
 
 ```
-yourdomain.com  ──►  Vercel (Next.js frontend)
+trkflyai.com  ──►  Vercel (Next.js frontend)
                             │
                             │   /api/v1/* fetches
                             ▼
-                api.yourdomain.com  ──►  Render (FastAPI backend)
+                api.trkflyai.com  ──►  Render (FastAPI backend)
                                               │
                                               ▼
                                        MongoDB Atlas
@@ -39,7 +39,7 @@ git push -u origin main
    |---|---|
    | `MONGO_URI` | Your MongoDB Atlas connection string |
    | `GEMINI_API_KEY` | Your Google AI Studio key |
-   | `CORS_ORIGINS` | `["https://yourdomain.com","https://www.yourdomain.com"]` (will update later) |
+   | `CORS_ORIGINS` | `["https://trkflyai.com","https://www.trkflyai.com"]` (will update later) |
 
 6. Render redeploys automatically. Wait for **Live**.
 7. Test: open `https://trkfly-api.onrender.com/health` → should return `{"status":"healthy"}`.
@@ -71,7 +71,7 @@ You'll wire two DNS records: root → Vercel, `api.` → Render.
 
 ### A) Connect domain to Vercel (root + www)
 
-1. **Vercel** → your project → **Settings** → **Domains** → **Add** → enter `yourdomain.com`
+1. **Vercel** → your project → **Settings** → **Domains** → **Add** → enter `trkflyai.com`
 2. Vercel shows DNS instructions. Copy them.
 3. Log in to **Namecheap** → **Domain List** → **Manage** → **Advanced DNS**
 4. Delete any existing `A` records for `@` and `CNAME` for `www`.
@@ -82,12 +82,12 @@ You'll wire two DNS records: root → Vercel, `api.` → Render.
    | `A` | `@` | `76.76.21.21` | Automatic |
    | `CNAME` | `www` | `cname.vercel-dns.com.` | Automatic |
 
-6. Back in Vercel, also add the `www.yourdomain.com` variant — it'll redirect to the apex automatically.
+6. Back in Vercel, also add the `www.trkflyai.com` variant — it'll redirect to the apex automatically.
 7. DNS propagation: usually 5-30 min, can take up to 24h. Vercel auto-issues SSL.
 
-### B) Connect `api.yourdomain.com` to Render
+### B) Connect `api.trkflyai.com` to Render
 
-1. **Render** → your service → **Settings** → **Custom Domains** → **Add Custom Domain** → enter `api.yourdomain.com`
+1. **Render** → your service → **Settings** → **Custom Domains** → **Add Custom Domain** → enter `api.trkflyai.com`
 2. Render shows a CNAME target like `trkfly-api.onrender.com`.
 3. In Namecheap **Advanced DNS**, add:
 
@@ -101,21 +101,21 @@ You'll wire two DNS records: root → Vercel, `api.` → Render.
 
 ## 5 · Final wiring
 
-Once DNS is live (test by opening `https://yourdomain.com` and `https://api.yourdomain.com/health`):
+Once DNS is live (test by opening `https://trkflyai.com` and `https://api.trkflyai.com/health`):
 
 1. **Render → Environment** → update `CORS_ORIGINS` to:
    ```
-   ["https://yourdomain.com","https://www.yourdomain.com"]
+   ["https://trkflyai.com","https://www.trkflyai.com"]
    ```
    Click **Save Changes** → Render redeploys.
 
 2. **Vercel → Settings → Environment Variables** → edit `NEXT_PUBLIC_API_URL` to:
    ```
-   https://api.yourdomain.com/api/v1
+   https://api.trkflyai.com/api/v1
    ```
    Click **Save** → **Deployments** tab → trigger a redeploy.
 
-Done. Open `https://yourdomain.com` — every feature should work end-to-end.
+Done. Open `https://trkflyai.com` — every feature should work end-to-end.
 
 ---
 
