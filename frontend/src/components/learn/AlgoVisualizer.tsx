@@ -127,12 +127,12 @@ function genBFSSteps(adj: number[][], start: number): BFSStep[] {
   steps.push({ visited: [start], current: -1, queue: [...queue] });
   while (queue.length) {
     const cur = queue.shift()!;
-    steps.push({ visited: [...visited], current: cur, queue: [...queue] });
+    steps.push({ visited: Array.from(visited), current: cur, queue: [...queue] });
     for (const n of adj[cur]) {
       if (!visited.has(n)) {
         visited.add(n);
         queue.push(n);
-        steps.push({ visited: [...visited], current: cur, queue: [...queue] });
+        steps.push({ visited: Array.from(visited), current: cur, queue: [...queue] });
       }
     }
   }
