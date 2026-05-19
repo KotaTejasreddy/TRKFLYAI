@@ -61,7 +61,7 @@ export interface RoadmapSection {
 }
 
 export interface Roadmap {
-  success: boolean;
+  success?: boolean;
   language: string;
   title: string;
   description: string;
