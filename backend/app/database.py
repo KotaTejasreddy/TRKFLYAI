@@ -1,4 +1,5 @@
 import logging
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from app.config import settings
 
@@ -11,7 +12,13 @@ _database: AsyncIOMotorDatabase | None = None
 async def connect_db() -> None:
     global _client, _database
     logger.info("Connecting to MongoDB at %s", settings.MONGO_URI)
-    _client = AsyncIOMotorClient(settings.MONGO_URI)
+    # tlsCAFile fixes SSL handshake failures on cloud platforms (Render, Heroku, etc.)
+    # where the default CA bundle doesn't match what Atlas presents.
+    _client = AsyncIOMotorClient(
+        settings.MONGO_URI,
+        tlsCAFile=certifi.where(),
+        serverSelectionTimeoutMS=20_000,
+    )
     _database = _client[settings.DB_NAME]
     # Verify connectivity
     await _client.admin.command("ping")
