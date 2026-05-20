@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeftIcon, CheckIcon, BoltIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoltIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getPlans, createPaymentOrder, verifyPayment } from "@/lib/api";
 import type { PlanInfo } from "@/types";
@@ -30,6 +30,9 @@ function loadRazorpay(): Promise<void> {
 
 export default function SubscribePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isWelcome = searchParams.get("welcome") === "1";
+  const skipTo = searchParams.get("next") || "/learn";
   const { token, user, access, loading: authLoading, refresh } = useAuth();
   const [plans, setPlans] = useState<PlanInfo[]>([]);
   const [trialDays, setTrialDays] = useState(3);
@@ -122,19 +125,53 @@ export default function SubscribePage() {
   return (
     <div className="pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link href="/learn" className="inline-flex items-center gap-2 text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
-          <ArrowLeftIcon className="w-4 h-4" /> Back to LearnAI
-        </Link>
+        {!isWelcome && (
+          <Link href="/learn" className="inline-flex items-center gap-2 text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
+            <ArrowLeftIcon className="w-4 h-4" /> Back to LearnAI
+          </Link>
+        )}
+
+        {/* Welcome banner for first-time signups */}
+        {isWelcome && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-5 rounded-2xl flex items-center gap-4"
+            style={{
+              background: "linear-gradient(90deg, rgba(16,185,129,0.10), rgba(99,102,241,0.10))",
+              border: "1px solid rgba(16,185,129,0.30)",
+            }}
+          >
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+              <SparklesIcon className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs uppercase tracking-wider font-bold text-emerald-300 mb-0.5">
+                Welcome to TRKFLY AI{user?.handle ? `, ${user.handle}` : ""} 🎉
+              </div>
+              <div className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                Your <span className="text-emerald-300">{trialDays}-day free trial</span> is active. Pick a plan now to lock in your price and extend access.
+              </div>
+            </div>
+            <Link
+              href={skipTo}
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+            >
+              Skip · use trial
+              <ArrowRightIcon className="w-3.5 h-3.5" />
+            </Link>
+          </motion.div>
+        )}
 
         <div className="text-center mb-10">
           <h1 className="text-3xl md:text-5xl font-bold mb-3">
-            <span className="gradient-text">Pick your plan</span>
+            <span className="gradient-text">{isWelcome ? "Choose your plan" : "Pick your plan"}</span>
           </h1>
           <p className="text-sm md:text-base max-w-lg mx-auto" style={{ color: "var(--text-secondary)" }}>
             Multi-language AI lessons. Mock interviews. Code playground. All 17 roadmaps.
             Cancel anytime — but you won't want to.
           </p>
-          {access && (
+          {access && !isWelcome && (
             <div className="mt-4 inline-block px-3 py-1.5 rounded-full text-xs font-semibold"
               style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
               Current: <span className="text-indigo-300">{access.plan}</span> · {access.days_left} days left
@@ -208,6 +245,19 @@ export default function SubscribePage() {
             </motion.div>
           ))}
         </div>
+
+        {isWelcome && (
+          <div className="text-center mb-6">
+            <Link
+              href={skipTo}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Not now — continue with my {trialDays}-day free trial
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
 
         <div className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
           <div className="inline-flex items-center gap-2">

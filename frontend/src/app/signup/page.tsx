@@ -28,7 +28,9 @@ export default function SignupPage() {
     setLoading(false);
     if (e2 || !data) { setError(e2 || "Could not create account."); return; }
     login(data.token, data.user);
-    router.push(next);
+    // First-time signup → show the subscription options before LearnAI.
+    // The 3-day free trial is already active; user can skip + continue with trial.
+    router.push(`/subscribe?welcome=1&next=${encodeURIComponent(next)}`);
   }
 
   return (
