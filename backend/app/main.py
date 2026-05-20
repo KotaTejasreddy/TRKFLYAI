@@ -10,7 +10,7 @@ from app.routes import (
     products_router, contact_router, careers_router,
     learn_router, roadmap_router,
     auth_router, compiler_router, recommend_router,
-    ds_router, bi_router,
+    ds_router, bi_router, payments_router,
 )
 
 setup_logging()
@@ -58,6 +58,7 @@ app.include_router(compiler_router)
 app.include_router(recommend_router)
 app.include_router(ds_router)
 app.include_router(bi_router)
+app.include_router(payments_router)
 
 
 @app.get("/", tags=["Root"])

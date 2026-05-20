@@ -195,6 +195,40 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
+export interface PlanInfo {
+  id: "monthly" | "quarterly" | "yearly";
+  label: string;
+  amount: number;
+  currency: string;
+  days: number;
+  popular: boolean;
+}
+
+export interface PlansResponse {
+  success: boolean;
+  trial_days: number;
+  plans: PlanInfo[];
+}
+
+export interface AccessStatus {
+  success: boolean;
+  has_access: boolean;
+  plan: string;
+  expires_at: string | null;
+  days_left: number;
+  reason: string;
+}
+
+export interface CreateOrderResponse {
+  success: boolean;
+  order_id: string;
+  amount: number;          // paise (₹49 = 4900)
+  currency: string;
+  key_id: string;
+  plan: "monthly" | "quarterly" | "yearly";
+  mock: boolean;
+}
+
 export interface DsColumnProfile {
   name: string;
   inferred_type: string;

@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon, FireIcon, BoltIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon, FireIcon, BoltIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { NAV_LINKS, SITE } from "@/lib/constants";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { useXp } from "@/lib/useXp";
 import { getLevel, getXpToNextLevel } from "@/lib/xp";
 
@@ -15,6 +16,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { user, access, logout } = useAuth();
   const xpState = useXp();
   const level = getLevel(xpState.xp);
   const { current: xpInLevel, needed: xpNeeded } = getXpToNextLevel(xpState.xp);
@@ -135,12 +137,57 @@ export default function Navbar() {
                 </AnimatePresence>
               </motion.button>
 
-              <Link
-                href="/learn"
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-sm font-semibold hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all hover:-translate-y-0.5"
-              >
-                Start Learning
-              </Link>
+              {/* Auth / user state */}
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <div
+                    title={access ? `${access.plan} · ${access.days_left}d left` : user.email}
+                    className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs"
+                    style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+                  >
+                    <span className="w-5 h-5 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-[10px] font-bold flex items-center justify-center">
+                      {(user.handle?.[0] || user.email[0]).toUpperCase()}
+                    </span>
+                    <span className="font-semibold truncate max-w-[100px]" style={{ color: "var(--text)" }}>
+                      {user.handle || user.email.split("@")[0]}
+                    </span>
+                    {access?.plan === "trial" && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300">
+                        TRIAL {access.days_left}d
+                      </span>
+                    )}
+                    {access && access.plan !== "trial" && access.plan !== "none" && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 uppercase">
+                        {access.plan}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={logout}
+                    title="Sign out"
+                    className="p-2 rounded-lg transition-colors hover:border-red-500/40"
+                    style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+                  >
+                    <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-sm font-semibold hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all hover:-translate-y-0.5"
+                  >
+                    Start free
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile right */}

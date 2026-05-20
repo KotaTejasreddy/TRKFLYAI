@@ -35,6 +35,7 @@ async def signup(request: SignupRequest):
     if existing:
         raise AppException(status_code=409, detail="Account already exists for this email")
 
+    now_iso = datetime.utcnow().isoformat()
     doc = {
         "email": request.email.lower(),
         "handle": request.handle or request.email.split("@")[0],
@@ -43,7 +44,13 @@ async def signup(request: SignupRequest):
         "streak_days": 0,
         "last_active_date": None,
         "completed": {},
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": now_iso,
+        # Auto-start 3-day free trial
+        "plan": "trial",
+        "trial_started_at": now_iso,
+        "subscription_started_at": None,
+        "subscription_expires_at": None,
+        "payment_history": [],
     }
     result = await users.insert_one(doc)
     doc["_id"] = result.inserted_id

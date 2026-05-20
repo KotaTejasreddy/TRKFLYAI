@@ -31,3 +31,11 @@ services:
         generateValue: true         # Render auto-generates a strong secret
       - key: CORS_ORIGINS
         sync: false                 # e.g. ["https://yourdomain.com","https://www.yourdomain.com"]
+      - key: MOCK_PAYMENTS
+        value: "true"               # set to false once Razorpay keys are in place
+      - key: TRIAL_DAYS
+        value: "3"
+      - key: RAZORPAY_KEY_ID
+        sync: false                 # set in dashboard from https://dashboard.razorpay.com/app/keys
+      - key: RAZORPAY_KEY_SECRET
+        sync: false

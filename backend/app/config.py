@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     JWT_SECRET: str = ""
     RATE_LIMIT_PER_MIN: int = 60
     RATE_LIMIT_AI_PER_MIN: int = 15
+    # Payments (Razorpay)
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
+    MOCK_PAYMENTS: bool = False        # set True to simulate successful payments without Razorpay
+    TRIAL_DAYS: int = 3
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

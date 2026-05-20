@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import dynamic from "next/dynamic";
 
 const CursorGrid = dynamic(() => import("@/components/ui/CursorGrid"), { ssr: false });
@@ -31,11 +32,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider>
-          <CursorGrid />
-          <CommandPalette />
-          <Navbar />
-          <main className="relative z-10 min-h-screen">{children}</main>
-          <Footer />
+          <AuthProvider>
+            <CursorGrid />
+            <CommandPalette />
+            <Navbar />
+            <main className="relative z-10 min-h-screen">{children}</main>
+            <Footer />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

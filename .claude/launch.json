@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js Frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "FastAPI Backend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["run.py"],
+      "port": 8000
+    },
+    {
+      "name": "AI Digital Twin API",
+      "runtimeExecutable": "uvicorn",
+      "runtimeArgs": ["app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "SENTIENT-X Executor API",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "sentient_x", "serve", "--port", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "Dostii App",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3001", "--directory", "C:\\Users\\tejas\\Desktop\\Dostii\\app"],
+      "port": 3001
+    }
+  ]
+}

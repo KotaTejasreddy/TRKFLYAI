@@ -1,4 +1,4 @@
-import { Product, ContactFormData, ApplicationFormData, LearnRequest, LearnResponse, StructuredLearnResponse, DoubtRequest, DoubtResponse, SimplifyRequest, SimplifyResponse, GuideRequest, GuideResponse, Roadmap, RoadmapLanguage, CheatSheetRequest, CheatSheetResponse, InterviewQuestionsRequest, InterviewQuestionsResponse, InterviewGradeRequest, InterviewGradeResponse, DebugRequest, DebugResponse, CompilerRunRequest, CompilerRunResponse, AuthResponse, AuthUser, DsAnalyzeRequest, DsAnalyzeResponse, BiAnalyzeRequest, BiAnalyzeResponse } from "@/types";
+import { Product, ContactFormData, ApplicationFormData, LearnRequest, LearnResponse, StructuredLearnResponse, DoubtRequest, DoubtResponse, SimplifyRequest, SimplifyResponse, GuideRequest, GuideResponse, Roadmap, RoadmapLanguage, CheatSheetRequest, CheatSheetResponse, InterviewQuestionsRequest, InterviewQuestionsResponse, InterviewGradeRequest, InterviewGradeResponse, DebugRequest, DebugResponse, CompilerRunRequest, CompilerRunResponse, AuthResponse, AuthUser, DsAnalyzeRequest, DsAnalyzeResponse, BiAnalyzeRequest, BiAnalyzeResponse, PlansResponse, AccessStatus, CreateOrderResponse } from "@/types";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
@@ -207,5 +207,44 @@ export async function analyzeBusinessIntelligence(
   return fetchApi<BiAnalyzeResponse>("/bi/analyze", {
     method: "POST",
     body: JSON.stringify(data),
+  });
+}
+
+/* ─── Payments / Subscription ─── */
+
+export async function getPlans(): Promise<ApiResponse<PlansResponse>> {
+  return fetchApi<PlansResponse>("/payments/plans");
+}
+
+export async function getAccess(token: string): Promise<ApiResponse<AccessStatus>> {
+  return fetchApi<AccessStatus>("/payments/access", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function createPaymentOrder(
+  token: string,
+  plan: "monthly" | "quarterly" | "yearly",
+): Promise<ApiResponse<CreateOrderResponse>> {
+  return fetchApi<CreateOrderResponse>("/payments/order", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ plan }),
+  });
+}
+
+export async function verifyPayment(
+  token: string,
+  payload: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+    plan: "monthly" | "quarterly" | "yearly";
+  },
+): Promise<ApiResponse<{ success: boolean; plan: string; expires_at: string; days_active: number }>> {
+  return fetchApi("/payments/verify", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
   });
 }
