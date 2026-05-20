@@ -1,15 +1,21 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoltIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getPlans, createPaymentOrder, verifyPayment } from "@/lib/api";
 import type { PlanInfo } from "@/types";
+
+export default function SubscribePage() {
+  return (
+    <Suspense fallback={<div className="pt-24 pb-16 min-h-screen" />}>
+      <SubscribePageInner />
+    </Suspense>
+  );
+}
 
 declare global {
   interface Window {
@@ -30,7 +36,7 @@ function loadRazorpay(): Promise<void> {
   });
 }
 
-export default function SubscribePage() {
+function SubscribePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWelcome = searchParams.get("welcome") === "1";

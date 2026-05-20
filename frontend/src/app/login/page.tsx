@@ -1,16 +1,22 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ArrowRightIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { login as loginApi } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="pt-24 pb-16 min-h-screen" />}>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/learn";
