@@ -21,76 +21,95 @@ const SENTENCES: Sentence[] = [
     explanation: "Because 'river' and 'steep' light up, the model decides 'bank' means a riverbank — not a financial bank.",
   },
   {
-    focusIdx: 4,
+    focusIdx: 6,
     tokens: [
-      { word: "She",      weight: 0.30 },
-      { word: "deposited",weight: 0.92 },
-      { word: "her",      weight: 0.20 },
-      { word: "salary",   weight: 0.80 },
-      { word: "in",       weight: 0.10 },
-      { word: "the",      weight: 0.05 },
-      { word: "bank",     weight: 1.00 },
+      { word: "She",       weight: 0.30 },
+      { word: "deposited", weight: 0.92 },
+      { word: "her",       weight: 0.20 },
+      { word: "salary",    weight: 0.80 },
+      { word: "in",        weight: 0.10 },
+      { word: "the",       weight: 0.05 },
+      { word: "bank",      weight: 1.00 },
     ],
     explanation: "Here 'deposited' and 'salary' dominate attention — same word, completely different meaning.",
   },
+  {
+    focusIdx: 2,
+    tokens: [
+      { word: "The",     weight: 0.05 },
+      { word: "golden",  weight: 0.78 },
+      { word: "apple",   weight: 1.00 },
+      { word: "fell",    weight: 0.45 },
+      { word: "from",    weight: 0.10 },
+      { word: "Newton's",weight: 0.88 },
+      { word: "tree",    weight: 0.65 },
+    ],
+    explanation: "'Newton's' and 'golden' pull 'apple' toward the physics story, not the fruit basket.",
+  },
 ];
+
+/** Heatmap from cool blue → cyan → green → amber → hot pink. */
+function heatColor(w: number): { bg: string; bd: string; text: string; glow: string } {
+  if (w >= 0.85) return { bg: "rgba(236,72,153,0.18)",  bd: "rgba(236,72,153,0.7)",  text: "#fbcfe8", glow: "rgba(236,72,153,0.55)" };
+  if (w >= 0.65) return { bg: "rgba(245,158,11,0.16)",  bd: "rgba(245,158,11,0.6)",  text: "#fde68a", glow: "rgba(245,158,11,0.45)" };
+  if (w >= 0.45) return { bg: "rgba(16,185,129,0.14)",  bd: "rgba(16,185,129,0.55)", text: "#a7f3d0", glow: "rgba(16,185,129,0.35)" };
+  if (w >= 0.25) return { bg: "rgba(34,211,238,0.10)",  bd: "rgba(34,211,238,0.45)", text: "#67e8f9", glow: "rgba(34,211,238,0.25)" };
+  return            { bg: "rgba(99,102,241,0.06)",  bd: "rgba(99,102,241,0.25)", text: "rgba(199,210,254,0.55)", glow: "rgba(99,102,241,0.10)" };
+}
 
 export default function AttentionDemo() {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % SENTENCES.length), 6000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % SENTENCES.length), 6500);
     return () => clearInterval(t);
   }, []);
   const s = SENTENCES[idx];
 
   return (
     <div className="space-y-5">
-      {/* Sentence with weighted tokens */}
-      <div className="rounded-2xl p-5 sm:p-6"
+      {/* Sentence with weighted token cards */}
+      <div className="rounded-2xl p-5 sm:p-6 relative overflow-hidden"
         style={{
-          background: "linear-gradient(180deg, rgba(15,23,42,0.85), rgba(2,6,23,0.95))",
-          border: "1px solid rgba(34,211,238,0.16)",
+          background: "radial-gradient(ellipse at 20% 0%, rgba(168,85,247,0.10), transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(236,72,153,0.10), transparent 60%), linear-gradient(180deg, rgba(15,23,42,0.92), rgba(2,6,23,0.98))",
+          border: "1px solid rgba(103,232,249,0.16)",
         }}>
-        <div className="text-[10px] font-mono tracking-[0.2em] uppercase mb-4"
-          style={{ color: "rgba(103,232,249,0.6)" }}>
+        <div className="text-[10px] font-mono tracking-[0.2em] uppercase mb-5"
+          style={{ color: "rgba(103,232,249,0.7)" }}>
           MODEL ASKS: which words explain &ldquo;
-          <span style={{ color: "#f5d0fe" }}>{s.tokens[s.focusIdx].word}</span>
+          <span style={{ color: "#fbcfe8" }}>{s.tokens[s.focusIdx].word}</span>
           &rdquo;?
         </div>
 
-        <div className="flex flex-wrap items-end gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {s.tokens.map((t, i) => {
             const isFocus = i === s.focusIdx;
-            const intensity = t.weight;
-            const fontSize = 14 + intensity * 12;
-            const opacity = 0.35 + intensity * 0.65;
-            const fontWeight = intensity > 0.6 ? 800 : intensity > 0.3 ? 600 : 400;
+            const c = heatColor(t.weight);
             return (
-              <motion.span
+              <motion.div
                 key={`${idx}-${i}`}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity, y: 0 }}
-                transition={{ delay: i * 0.06, duration: 0.5 }}
+                initial={{ opacity: 0, y: 14, scale: 0.85 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: i * 0.07, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-bold"
                 style={{
-                  fontSize: `${fontSize}px`,
-                  fontWeight,
-                  color: isFocus ? "#f5d0fe" : intensity > 0.55 ? "#67e8f9" : "rgba(226,232,240,0.78)",
-                  textShadow: intensity > 0.6 ? `0 0 ${10 + intensity * 18}px rgba(34,211,238,0.5)` : "none",
-                  borderBottom: isFocus ? "2px solid rgba(168,85,247,0.7)" : "none",
-                  paddingBottom: isFocus ? "2px" : 0,
-                }}
-              >
+                  background: c.bg,
+                  border: isFocus ? `1.5px solid rgba(168,85,247,0.85)` : `1px solid ${c.bd}`,
+                  color: c.text,
+                  fontSize: `${13 + t.weight * 6}px`,
+                  boxShadow: `0 0 ${t.weight * 24}px ${c.glow}`,
+                  textShadow: t.weight > 0.55 ? `0 0 ${10 + t.weight * 14}px ${c.glow}` : "none",
+                }}>
                 {t.word}
-              </motion.span>
+              </motion.div>
             );
           })}
         </div>
       </div>
 
       {/* Weight bars */}
-      <div className="rounded-2xl p-5"
+      <div className="rounded-2xl p-5 relative overflow-hidden"
         style={{
-          background: "rgba(2,6,23,0.55)",
+          background: "linear-gradient(180deg, rgba(15,23,42,0.85), rgba(2,6,23,0.95))",
           border: "1px solid rgba(34,211,238,0.10)",
         }}>
         <div className="text-[10px] font-mono tracking-[0.2em] uppercase mb-3"
@@ -98,30 +117,48 @@ export default function AttentionDemo() {
           ATTENTION WEIGHTS
         </div>
         <div className="space-y-1.5">
-          {s.tokens.map((t, i) => (
-            <div key={`bar-${idx}-${i}`} className="flex items-center gap-3 text-xs">
-              <span className="font-mono w-20 sm:w-24 truncate" style={{ color: "rgba(226,232,240,0.8)" }}>
-                {t.word}
-              </span>
-              <div className="flex-1 h-1.5 rounded-full overflow-hidden"
-                style={{ background: "rgba(34,211,238,0.08)" }}>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${t.weight * 100}%` }}
-                  transition={{ delay: 0.3 + i * 0.05, duration: 0.6 }}
-                  className="h-full rounded-full"
-                  style={{
-                    background: i === s.focusIdx
-                      ? "linear-gradient(90deg, #a855f7, #f5d0fe)"
-                      : "linear-gradient(90deg, #22d3ee, #67e8f9)",
-                  }}
-                />
+          {s.tokens.map((t, i) => {
+            const isFocus = i === s.focusIdx;
+            const c = heatColor(t.weight);
+            return (
+              <div key={`bar-${idx}-${i}`} className="flex items-center gap-3 text-xs">
+                <span className="font-mono w-20 sm:w-24 truncate" style={{ color: "rgba(226,232,240,0.8)" }}>
+                  {t.word}
+                </span>
+                <div className="flex-1 h-2 rounded-full overflow-hidden relative"
+                  style={{ background: "rgba(15,23,42,0.85)", border: "1px solid rgba(34,211,238,0.08)" }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${t.weight * 100}%` }}
+                    transition={{ delay: 0.3 + i * 0.05, duration: 0.7 }}
+                    className="h-full rounded-full"
+                    style={{
+                      background: isFocus
+                        ? "linear-gradient(90deg, #a855f7, #ec4899, #fbcfe8)"
+                        : t.weight >= 0.65
+                          ? "linear-gradient(90deg, #f59e0b, #ec4899)"
+                          : t.weight >= 0.45
+                            ? "linear-gradient(90deg, #10b981, #f59e0b)"
+                            : "linear-gradient(90deg, #22d3ee, #10b981)",
+                      boxShadow: `0 0 12px ${c.glow}`,
+                    }}
+                  />
+                </div>
+                <span className="font-mono w-10 text-right" style={{ color: c.text }}>
+                  {t.weight.toFixed(2)}
+                </span>
               </div>
-              <span className="font-mono w-10 text-right" style={{ color: "rgba(165,243,252,0.7)" }}>
-                {t.weight.toFixed(2)}
-              </span>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+
+        {/* Heatmap legend */}
+        <div className="mt-4 flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider"
+          style={{ color: "rgba(148,163,184,0.6)" }}>
+          <span>low</span>
+          <div className="flex-1 h-1.5 rounded-full"
+            style={{ background: "linear-gradient(90deg, rgba(99,102,241,0.4), #22d3ee, #10b981, #f59e0b, #ec4899)" }} />
+          <span>high</span>
         </div>
       </div>
 
@@ -131,7 +168,7 @@ export default function AttentionDemo() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
         className="text-sm sm:text-base leading-relaxed pt-2"
-        style={{ color: "rgba(226,232,240,0.85)" }}>
+        style={{ color: "rgba(226,232,240,0.88)" }}>
         💡 {s.explanation}
       </motion.p>
     </div>
