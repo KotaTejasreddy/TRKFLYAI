@@ -6,14 +6,20 @@ import ConceptSection from "@/components/learn/concepts/ConceptSection";
 import TokenizationDemo from "@/components/learn/concepts/TokenizationDemo";
 import EmbeddingsDemo from "@/components/learn/concepts/EmbeddingsDemo";
 import AttentionDemo from "@/components/learn/concepts/AttentionDemo";
+import AuroraBg from "@/components/learn/AuroraBg";
 
 export default function InsideLLMPage() {
   return (
-    <div style={{ background: "#03030a" }} className="relative">
+    <div className="relative">
+      {/* Aurora background — fixed so it follows scroll */}
+      <div className="fixed inset-0 -z-10">
+        <AuroraBg />
+      </div>
+
       {/* Sticky top bar */}
       <div className="sticky top-16 z-20 backdrop-blur-xl border-b"
         style={{
-          background: "rgba(3,3,10,0.7)",
+          background: "rgba(3,3,10,0.55)",
           borderColor: "rgba(34,211,238,0.10)",
         }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">

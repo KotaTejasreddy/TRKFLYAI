@@ -18,6 +18,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDownIcon } from "@heroicons/react/24/outline";
+import AuroraBg from "./AuroraBg";
 
 /* ───────── tokens orbiting the brain ───────── */
 const TOKENS = [
@@ -170,27 +171,8 @@ export default function MindOfLLMHero({ onExplore }: { onExplore?: () => void })
       className="relative w-full overflow-hidden"
       style={{ minHeight: "92vh", background: "#05050a" }}
     >
-      {/* 1 · Deep base + animated grid */}
-      <div
-        className="absolute inset-0 opacity-[0.18]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-          maskImage: "radial-gradient(ellipse 70% 50% at 50% 50%, black 30%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(ellipse 70% 50% at 50% 50%, black 30%, transparent 100%)",
-        }}
-      />
-      <motion.div
-        className="absolute inset-0"
-        animate={{ backgroundPositionX: ["0px", "60px"], backgroundPositionY: ["0px", "60px"] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(6,182,212,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.06) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }}
-      />
+      {/* 1 · Aurora background (replaces the old animated grid) */}
+      <AuroraBg />
 
       {/* 2 · Mouse-reactive spotlight */}
       <motion.div
