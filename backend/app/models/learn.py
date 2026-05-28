@@ -15,6 +15,8 @@ TOPICS = [
     "SQL",
     "Docker",
     "Git",
+    "Big Data",
+    "Kubernetes",
     "Machine Learning",
     "Deep Learning",
     "Generative AI",

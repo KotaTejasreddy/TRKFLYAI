@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckIcon, BoltIcon, FireIcon, SparklesIcon } from "@heroicons/react/24/outline";
-import SectionHeading from "@/components/ui/SectionHeading";
 import SmartResume from "@/components/learn/SmartResume";
+import MindOfLLMHero from "@/components/learn/MindOfLLMHero";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getPlans } from "@/lib/api";
 import type { PlanInfo } from "@/types";
@@ -29,6 +29,8 @@ const TOPICS = [
   { id: "SQL",             label: "SQL",             icon: "🗄️", color: "from-blue-500 to-blue-700",     roadmap: "sql" },
   { id: "Docker",          label: "Docker",          icon: "🐳",  color: "from-blue-400 to-blue-600",     roadmap: "docker" },
   { id: "Git",             label: "Git",             icon: "🌳",  color: "from-gray-400 to-gray-600",     roadmap: "git" },
+  { id: "Big Data",        label: "Big Data",        icon: "📦",  color: "from-amber-500 to-orange-600",  roadmap: "big-data" },
+  { id: "Kubernetes",      label: "Kubernetes",      icon: "☸️",  color: "from-sky-400 to-blue-600",      roadmap: "kubernetes" },
 ];
 
 const containerVariants = {
@@ -45,6 +47,11 @@ export default function LearnPage() {
   const router = useRouter();
   const { user, access } = useAuth();
   const [plans, setPlans] = useState<PlanInfo[]>([]);
+  const roadmapsRef = useRef<HTMLDivElement>(null);
+
+  function scrollToRoadmaps() {
+    roadmapsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   useEffect(() => {
     (async () => {
@@ -58,16 +65,16 @@ export default function LearnPage() {
   const currentPlanLabel = onPaid ? access?.plan : null;
 
   return (
-    <div className="pt-24 pb-16">
+    <>
+      {/* Cinematic hero — "Inside the Mind of an LLM" */}
+      <MindOfLLMHero onExplore={scrollToRoadmaps} />
+
+      <div ref={roadmapsRef} className="pt-16 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
-          {/* Header */}
-          <motion.div variants={itemVariants} className="mb-12">
-            <SectionHeading
-              title="TRK LearnAI"
-              subtitle="Pick a roadmap below. Inside each topic, choose your language and learning mode — AI crafts the lesson for you."
-            />
-            <div className="flex justify-center gap-2 -mt-8 mb-2">
+          {/* Quick action chips */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <div className="flex justify-center gap-2 mb-2 flex-wrap">
               <Link
                 href="/learn/bookmarks"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
@@ -227,6 +234,7 @@ export default function LearnPage() {
           </motion.div>
         </motion.div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

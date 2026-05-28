@@ -42,6 +42,8 @@ const SLUG_TO_TOPIC: Record<string, string> = {
   "sql": "SQL",
   "docker": "Docker",
   "git": "Git",
+  "big-data": "Big Data",
+  "kubernetes": "Kubernetes",
   "machine-learning": "Machine Learning",
   "deep-learning": "Deep Learning",
   "generative-ai": "Generative AI",
