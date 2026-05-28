@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckIcon, BoltIcon, FireIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import SmartResume from "@/components/learn/SmartResume";
-import MindOfLLMHero from "@/components/learn/MindOfLLMHero";
+import SectionHeading from "@/components/ui/SectionHeading";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getPlans } from "@/lib/api";
 import type { PlanInfo } from "@/types";
@@ -47,11 +47,6 @@ export default function LearnPage() {
   const router = useRouter();
   const { user, access } = useAuth();
   const [plans, setPlans] = useState<PlanInfo[]>([]);
-  const roadmapsRef = useRef<HTMLDivElement>(null);
-
-  function scrollToRoadmaps() {
-    roadmapsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
 
   useEffect(() => {
     (async () => {
@@ -65,16 +60,16 @@ export default function LearnPage() {
   const currentPlanLabel = onPaid ? access?.plan : null;
 
   return (
-    <>
-      {/* Cinematic hero — "Inside the Mind of an LLM" */}
-      <MindOfLLMHero onExplore={scrollToRoadmaps} />
-
-      <div ref={roadmapsRef} className="pt-16 pb-16">
+    <div className="pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
-          {/* Quick action chips */}
+          {/* Header */}
           <motion.div variants={itemVariants} className="mb-8">
-            <div className="flex justify-center gap-2 mb-2 flex-wrap">
+            <SectionHeading
+              title="TRK LearnAI"
+              subtitle="Pick a roadmap. Inside each topic, choose your language and learning mode — AI crafts the lesson for you."
+            />
+            <div className="flex justify-center gap-2 -mt-4 flex-wrap">
               <Link
                 href="/learn/bookmarks"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
@@ -234,7 +229,6 @@ export default function LearnPage() {
           </motion.div>
         </motion.div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
