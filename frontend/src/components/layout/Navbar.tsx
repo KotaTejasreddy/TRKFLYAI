@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon, FireIcon, BoltIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, FireIcon, BoltIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { NAV_LINKS, SITE } from "@/lib/constants";
-import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useXp } from "@/lib/useXp";
 import { getLevel, getXpToNextLevel } from "@/lib/xp";
@@ -15,7 +14,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
   const { user, access, logout } = useAuth();
   const xpState = useXp();
   const level = getLevel(xpState.xp);
@@ -116,27 +114,6 @@ export default function Navbar() {
                 </motion.div>
               )}
 
-              {/* Theme toggle */}
-              <motion.button
-                onClick={toggleTheme}
-                whileTap={{ scale: 0.9 }}
-                style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
-                className="p-2 rounded-lg transition-colors hover:border-indigo-500/40"
-                aria-label="Toggle theme"
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  {theme === "dark" ? (
-                    <motion.span key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                      <SunIcon className="w-4 h-4" />
-                    </motion.span>
-                  ) : (
-                    <motion.span key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                      <MoonIcon className="w-4 h-4" />
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-
               {/* Auth / user state */}
               {user ? (
                 <div className="flex items-center gap-2">
@@ -192,15 +169,6 @@ export default function Navbar() {
 
             {/* Mobile right */}
             <div className="md:hidden flex items-center gap-2">
-              <motion.button
-                onClick={toggleTheme}
-                whileTap={{ scale: 0.9 }}
-                style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
-                className="p-2 rounded-lg"
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
-              </motion.button>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 style={{ color: "var(--text-secondary)" }}

@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import dynamic from "next/dynamic";
 
@@ -24,22 +23,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        {/* Apply theme before paint — prevents flash */}
+        {/* Always dark mode — light mode was removed */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.classList.add(t);})();`,
+            __html: `document.documentElement.classList.add('dark');`,
           }}
         />
       </head>
       <body className="font-sans antialiased">
-        <ThemeProvider>
-          <AuthProvider>
-            <CommandPalette />
-            <Navbar />
-            <main className="relative z-10 min-h-screen">{children}</main>
-            <Footer />
-          </AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <CommandPalette />
+          <Navbar />
+          <main className="relative z-10 min-h-screen">{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
