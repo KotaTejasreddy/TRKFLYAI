@@ -8,38 +8,59 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+/**
+ * fetchApi with cold-start tolerance.
+ * Render free tier sleeps after 15 min idle and takes 30-60s to wake.
+ * We retry on network errors / aborts with a 75s total budget so the
+ * first call of the day still succeeds.
+ */
 async function fetchApi<T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<ApiResponse<T>> {
-  try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-      ...options,
-    });
+  const TIMEOUT_MS = 35_000;   // each attempt
+  const MAX_ATTEMPTS = 3;      // 3 × 35s = ~75s budget
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    try {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        signal: controller.signal,
+        ...options,
+      });
+      clearTimeout(timer);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          data: null as unknown as T,
+          error: errorData.detail || `Request failed with status ${response.status}`,
+        };
+      }
+      const data = await response.json();
+      return { data };
+    } catch (error) {
+      clearTimeout(timer);
+      const isNetwork =
+        error instanceof TypeError ||
+        (error instanceof DOMException && error.name === "AbortError");
+      // Retry on network/timeout errors only, not the final attempt
+      if (isNetwork && attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, 1500));
+        continue;
+      }
       return {
         data: null as unknown as T,
-        error: errorData.detail || `Request failed with status ${response.status}`,
+        error: isNetwork
+          ? "Server is waking up — please try again in 30 seconds."
+          : (error instanceof Error ? error.message : "An unexpected error occurred"),
       };
     }
-
-    const data = await response.json();
-    return { data };
-  } catch (error) {
-    return {
-      data: null as unknown as T,
-      error:
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred",
-    };
   }
+  return { data: null as unknown as T, error: "Request failed after retries." };
 }
 
 export async function getProducts(): Promise<ApiResponse<Product[]>> {

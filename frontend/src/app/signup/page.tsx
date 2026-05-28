@@ -28,12 +28,17 @@ function SignupPageInner() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [warming, setWarming] = useState(false);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
+    const warmTimer = setTimeout(() => setWarming(true), 4000);
     const { data, error: e2 } = await signupApi(email.trim().toLowerCase(), password, handle.trim() || undefined);
+    clearTimeout(warmTimer);
     setLoading(false);
+    setWarming(false);
     if (e2 || !data) { setError(e2 || "Could not create account."); return; }
     login(data.token, data.user);
     // First-time signup → show the subscription options before LearnAI.
@@ -84,7 +89,9 @@ function SignupPageInner() {
             )}
             <button type="submit" disabled={loading || !email || !password}
               className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-shadow">
-              {loading ? "Creating…" : <>Create account · Start 3-day trial <ArrowRightIcon className="w-4 h-4" /></>}
+              {loading
+                ? (warming ? "Waking server… (~30s)" : "Creating…")
+                : <>Create account · Start 3-day trial <ArrowRightIcon className="w-4 h-4" /></>}
             </button>
           </form>
 
