@@ -7,7 +7,8 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import dynamic from "next/dynamic";
 
-const CursorGrid = dynamic(() => import("@/components/ui/CursorGrid"), { ssr: false });
+// CursorGrid was removed — the cursor-reactive grid box animation that
+// followed the mouse is no longer rendered.
 const CommandPalette = dynamic(() => import("@/components/ui/CommandPalette"), { ssr: false });
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -33,7 +34,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>
-            <CursorGrid />
             <CommandPalette />
             <Navbar />
             <main className="relative z-10 min-h-screen">{children}</main>
