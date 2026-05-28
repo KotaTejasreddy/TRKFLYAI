@@ -144,6 +144,7 @@ function Typewriter() {
 
 /* ───────── main hero ───────── */
 export default function MindOfLLMHero({ onExplore }: { onExplore?: () => void }) {
+  // (onExplore optional — defaults to scrolling)
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
   const sx = useSpring(mx, { stiffness: 50, damping: 18 });
@@ -381,26 +382,41 @@ export default function MindOfLLMHero({ onExplore }: { onExplore?: () => void })
           <Typewriter />
         </motion.div>
 
-        <motion.button
-          onClick={onExplore}
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.6 }}
-          whileHover={{ y: -2, scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm relative overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, rgba(6,182,212,0.18), rgba(168,85,247,0.18))",
-            border: "1px solid rgba(103,232,249,0.4)",
-            color: "white",
-            backdropFilter: "blur(12px)",
-            boxShadow: "0 0 30px rgba(103,232,249,0.18), inset 0 0 12px rgba(168,85,247,0.10)",
-          }}
+          className="flex items-center gap-3 flex-wrap justify-center"
         >
-          <span className="relative z-10">Begin exploring</span>
-          <ArrowDownIcon className="relative z-10 w-4 h-4 transition-transform group-hover:translate-y-1" />
-          <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-purple-500/20" />
-        </motion.button>
+          <a
+            href="/learn/inside-llm"
+            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm relative overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, rgba(6,182,212,0.22), rgba(168,85,247,0.22))",
+              border: "1px solid rgba(103,232,249,0.55)",
+              color: "white",
+              backdropFilter: "blur(12px)",
+              boxShadow: "0 0 30px rgba(103,232,249,0.22), inset 0 0 12px rgba(168,85,247,0.12)",
+            }}
+          >
+            <span className="relative z-10">See how an LLM thinks</span>
+            <span className="relative z-10 transition-transform group-hover:translate-x-1">→</span>
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-purple-500/20" />
+          </a>
+          <button
+            onClick={onExplore}
+            className="group inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl font-medium text-sm"
+            style={{
+              background: "rgba(15,23,42,0.55)",
+              border: "1px solid rgba(34,211,238,0.20)",
+              color: "rgba(226,232,240,0.85)",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            Pick a roadmap
+            <ArrowDownIcon className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
+          </button>
+        </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
