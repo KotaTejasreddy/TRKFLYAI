@@ -7,6 +7,7 @@ import { Suspense, useState } from "react";
 import { ArrowRightIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { login as loginApi } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthProvider";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function LoginPage() {
   return (
@@ -60,8 +61,23 @@ function LoginPageInner() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-3 p-6 rounded-2xl"
+          <div className="p-6 rounded-2xl space-y-4"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+
+            {/* Google Sign-In (hides itself silently when NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set) */}
+            <GoogleSignInButton next={next} postSignup={false} />
+
+            {/* OR divider — only visible when Google button is rendering */}
+            {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+              <div className="flex items-center gap-3 my-1">
+                <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+                <span className="text-[10px] uppercase tracking-wider font-bold"
+                  style={{ color: "var(--text-muted)" }}>or with email</span>
+                <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+              </div>
+            )}
+
+            <form onSubmit={onSubmit} className="space-y-3">
             <div>
               <label className="block text-[10px] uppercase tracking-wider font-bold mb-1.5" style={{ color: "var(--text-muted)" }}>Email</label>
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email"
@@ -85,7 +101,8 @@ function LoginPageInner() {
                 ? (warming ? "Waking server… (~30s, first login of the day)" : "Signing in…")
                 : <>Sign in <ArrowRightIcon className="w-4 h-4" /></>}
             </button>
-          </form>
+            </form>
+          </div>
 
           <p className="mt-4 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
             New here?{" "}

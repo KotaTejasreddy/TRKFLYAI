@@ -207,6 +207,13 @@ export async function login(email: string, password: string): Promise<ApiRespons
   });
 }
 
+export async function loginWithGoogle(idToken: string): Promise<ApiResponse<AuthResponse>> {
+  return fetchApi<AuthResponse>("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ id_token: idToken }),
+  });
+}
+
 export async function getMe(token: string): Promise<ApiResponse<AuthUser>> {
   return fetchApi<AuthUser>("/auth/me", {
     headers: { Authorization: `Bearer ${token}` },

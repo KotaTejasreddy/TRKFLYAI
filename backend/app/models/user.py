@@ -13,6 +13,10 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class GoogleAuthRequest(BaseModel):
+    id_token: str = Field(..., description="JWT id_token returned by Google Identity Services")
+
+
 class AuthResponse(BaseModel):
     success: bool = True
     token: str

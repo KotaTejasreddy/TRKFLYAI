@@ -7,6 +7,7 @@ import { Suspense, useState } from "react";
 import { ArrowRightIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { signup as signupApi } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthProvider";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function SignupPage() {
   return (
@@ -62,8 +63,22 @@ function SignupPageInner() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-3 p-6 rounded-2xl"
+          <div className="p-6 rounded-2xl space-y-4"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+
+            {/* Google Sign-Up — auto-creates trial account on success */}
+            <GoogleSignInButton next={next} postSignup={true} />
+
+            {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+              <div className="flex items-center gap-3 my-1">
+                <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+                <span className="text-[10px] uppercase tracking-wider font-bold"
+                  style={{ color: "var(--text-muted)" }}>or with email</span>
+                <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+              </div>
+            )}
+
+            <form onSubmit={onSubmit} className="space-y-3">
             <div>
               <label className="block text-[10px] uppercase tracking-wider font-bold mb-1.5" style={{ color: "var(--text-muted)" }}>Email</label>
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email"
@@ -93,7 +108,8 @@ function SignupPageInner() {
                 ? (warming ? "Waking server… (~30s)" : "Creating…")
                 : <>Create account · Start 3-day trial <ArrowRightIcon className="w-4 h-4" /></>}
             </button>
-          </form>
+            </form>
+          </div>
 
           <p className="mt-4 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
             Already have an account?{" "}

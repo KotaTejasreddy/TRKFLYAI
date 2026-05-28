@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_SECRET: str = ""
     MOCK_PAYMENTS: bool = False        # set True to simulate successful payments without Razorpay
     TRIAL_DAYS: int = 3
+    # Google Sign-In — OAuth 2.0 Client ID from console.cloud.google.com
+    GOOGLE_CLIENT_ID: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

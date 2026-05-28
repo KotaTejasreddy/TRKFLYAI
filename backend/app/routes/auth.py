@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime
+import httpx
 from fastapi import APIRouter, Depends
+from app.config import settings
 from app.database import get_collection
 from app.exceptions import AppException
 from app.models.user import (
-    SignupRequest, LoginRequest, AuthResponse, UserOut,
+    SignupRequest, LoginRequest, GoogleAuthRequest, AuthResponse, UserOut,
     ProgressSyncRequest, ProgressSyncResponse,
 )
 from app.services.auth_service import (
@@ -67,6 +69,83 @@ async def login(request: LoginRequest):
         raise AppException(status_code=401, detail="Invalid email or password")
     token = issue_token(str(u["_id"]), u["email"])
     logger.info("Login: %s", u["email"])
+    return AuthResponse(token=token, user=_user_to_out(u))
+
+
+@router.post("/google", response_model=AuthResponse)
+async def google_auth(request: GoogleAuthRequest):
+    """
+    Sign in or sign up with Google.
+    Receives the id_token from Google Identity Services on the frontend,
+    verifies it against Google's tokeninfo endpoint, then creates/logs in the user.
+    """
+    if not request.id_token:
+        raise AppException(status_code=400, detail="Missing Google id_token")
+
+    # Verify the token with Google
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get(
+                "https://oauth2.googleapis.com/tokeninfo",
+                params={"id_token": request.id_token},
+            )
+        if r.status_code != 200:
+            raise AppException(status_code=401, detail="Invalid Google token")
+        claims = r.json()
+    except AppException:
+        raise
+    except Exception as exc:
+        logger.error("Google token verification failed: %s", exc)
+        raise AppException(status_code=502, detail="Could not verify Google token") from exc
+
+    # Validate audience matches our configured client ID (when set)
+    expected_aud = settings.GOOGLE_CLIENT_ID
+    if expected_aud and claims.get("aud") != expected_aud:
+        raise AppException(status_code=401, detail="Google token audience mismatch")
+
+    email = (claims.get("email") or "").lower()
+    email_verified = claims.get("email_verified") in (True, "true")
+    if not email or not email_verified:
+        raise AppException(status_code=401, detail="Google account email is not verified")
+
+    handle = claims.get("name") or email.split("@")[0]
+    picture = claims.get("picture")
+
+    # Look up existing user or create a new one
+    users = get_collection("users")
+    u = await users.find_one({"email": email})
+    if not u:
+        now_iso = datetime.utcnow().isoformat()
+        doc = {
+            "email": email,
+            "handle": handle,
+            "password_hash": "",                  # Google-only account, no password
+            "auth_provider": "google",
+            "google_picture": picture,
+            "xp": 0,
+            "streak_days": 0,
+            "last_active_date": None,
+            "completed": {},
+            "created_at": now_iso,
+            "plan": "trial",
+            "trial_started_at": now_iso,
+            "subscription_started_at": None,
+            "subscription_expires_at": None,
+            "payment_history": [],
+        }
+        result = await users.insert_one(doc)
+        doc["_id"] = result.inserted_id
+        u = doc
+        logger.info("Created Google-auth account: %s", email)
+    else:
+        # Refresh handle/picture on every login
+        await users.update_one(
+            {"_id": u["_id"]},
+            {"$set": {"handle": u.get("handle") or handle, "google_picture": picture, "auth_provider": u.get("auth_provider") or "google"}},
+        )
+        logger.info("Google login: %s", email)
+
+    token = issue_token(str(u["_id"]), u["email"])
     return AuthResponse(token=token, user=_user_to_out(u))
 
 

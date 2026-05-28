@@ -29,6 +29,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `document.documentElement.classList.add('dark');`,
           }}
         />
+        {/* Hint to browsers — speeds up the Google Sign-In script load */}
+        <link rel="preconnect" href="https://accounts.google.com" />
       </head>
       <body className="font-sans antialiased">
         <AuthProvider>
