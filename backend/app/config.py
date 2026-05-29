@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     TRIAL_DAYS: int = 3
     # Google Sign-In — OAuth 2.0 Client ID from console.cloud.google.com
     GOOGLE_CLIENT_ID: str = ""
+    # Admin gate — JWT user with this email can access /admin/stats
+    ADMIN_EMAIL: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

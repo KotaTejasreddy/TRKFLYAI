@@ -9,10 +9,11 @@ from app.routes.recommend import router as recommend_router
 from app.routes.ds import router as ds_router
 from app.routes.bi import router as bi_router
 from app.routes.payments import router as payments_router
+from app.routes.admin import router as admin_router
 
 __all__ = [
     "products_router", "contact_router", "careers_router",
     "learn_router", "roadmap_router",
     "auth_router", "compiler_router", "recommend_router",
-    "ds_router", "bi_router", "payments_router",
+    "ds_router", "bi_router", "payments_router", "admin_router",
 ]
